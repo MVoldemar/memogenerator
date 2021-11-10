@@ -157,11 +157,20 @@ class _CreateMemePageContentState extends State<CreateMemePageContent> {
                           return const AddNewMemeTextButton();
                         }
                         final item = items[index - 1];
-                        return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16,),
-                          height: 48,
-                          alignment: Alignment.centerLeft,
-                          child: Text(item.text, style: TextStyle(color: AppColors.darkGrey, fontSize: 16,),),
+                        return StreamBuilder<MemeText?>(
+                          stream: bloc.observeSelectedMemeText(),
+                          builder: (context, snapshot) {
+                            final MemeText? selectedMemeText =
+                            snapshot.hasData ? snapshot.data! : null;
+                            final haveSelected = selectedMemeText?.id == item.id;
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16,),
+                              height: 48,
+                              color: haveSelected ? AppColors.darkGrey16 : null,
+                              alignment: Alignment.centerLeft,
+                              child: Text(item.text, style: TextStyle(color: AppColors.darkGrey, fontSize: 16,),),
+                            );
+                          }
                         );
                       },
                       separatorBuilder: (BuildContext context, int index) {
