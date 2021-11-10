@@ -253,13 +253,22 @@ class _DraggableMemeTextState extends State<DraggableMemeText> {
   late double top;
   late double left;
   final double padding = 8;
+
+  @override
+  void initState() {
+    top = widget.parentConstraints.maxHeight/2;
+    left = widget.parentConstraints.maxWidth/3;
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
+
     final bloc = Provider.of<CreateMemeBloc>(context, listen: false);
 
     return Positioned(
-      top: widget.parentConstraints.minHeight/2,
-      left: widget.parentConstraints.minWidth/3,
+      top: top,
+      left: left,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
