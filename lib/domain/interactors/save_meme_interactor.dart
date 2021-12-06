@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 
 import 'package:memogenerator/data/models/meme.dart';
@@ -30,57 +28,53 @@ class SaveMemeInteractor {
       return MemesRepository.getInstance().addToMemes(meme);
     }
 
-
     final docsPath = await getApplicationDocumentsDirectory();
     print("$docsPath наш путь");
     final memePath = "${docsPath.absolute.path}${Platform.pathSeparator}memes";
     await Directory(memePath).create(recursive: true);
     final imageName = imagePath.split(Platform.pathSeparator).last;
-    final newImagePath = "$memePath${Platform.pathSeparator}$imageName";
+    String newImagePath = "$memePath${Platform.pathSeparator}$imageName";
     print("полный путь $newImagePath");
     final tempFile = File(imagePath);
     //await tempFile.copy(newImagePath);
-    int lenght = await tempFile.length();
-    print(lenght);
+    int length = await tempFile.length();
+    print(length);
 
-
-    final List<Meme> memesList =  await MemesRepository.getInstance().getMemes();
-    for(var meme in memesList)
-    {
-        if(meme.memePath == newImagePath && meme.memePath !=null ) {
-          if (await tempFile.length() == await File(meme.memePath!).length()) {
-            print("Файлы одинаковы, не сохраняем");
-          }
-          else {
-            print("Файлы разные, но имеют одинаковые имена, сохраняем");
-            //Добавление суффикса
-            String imageNumberStringWithType = newImagePath.split("_").last;
-            String imageNumberString = imageNumberStringWithType.split(".").first;
-            String imageFileType = imageNumberStringWithType.split(".").last;
-            int? imageNumber = int.tryParse(imageNumberString);
-            if(imageNumber == null){
-              imageNumber = 1;
-              String newImagePathWithSuffix = "${newImagePath.replaceRange(newImagePath.length-imageFileType.length-1, null,  "_1")}.$imageFileType";
-              await tempFile.copy(newImagePathWithSuffix);
-            }
-            else{
-              imageNumber++;
-              String newImageNumberString = imageNumber.toString();
-               String newImagePathWithSuffix = "${newImagePath.replaceRange(newImagePath.length-imageNumberStringWithType.length, null,  newImageNumberString)}.$imageFileType";
-              await tempFile.copy(newImagePathWithSuffix);
-            }
+    String newImagePathWithSuffix = newImagePath;
+    final List<Meme> memesList = await MemesRepository.getInstance().getMemes();
+    for (var meme in memesList) {
+      if (meme.memePath == newImagePath && meme.memePath != null) {
+        if (await tempFile.length() == await File(meme.memePath!).length()) {
+          print("Файлы одинаковы, не сохраняем");
+        } else {
+          print("Файлы разные, но имеют одинаковые имена, сохраняем");
+          //Добавление суффикса
+          String imageNumberStringWithType = newImagePath.split("_").last;
+          String imageNumberString = imageNumberStringWithType.split(".").first;
+          String imageFileType = imageNumberStringWithType.split(".").last;
+          int? imageNumber = int.tryParse(imageNumberString);
+          if (imageNumber == null) {
+            imageNumber = 1;
+            newImagePathWithSuffix =
+                "${newImagePath.replaceRange(newImagePath.length - imageFileType.length - 1, null, "_1")}.$imageFileType";
+            await tempFile.copy(newImagePathWithSuffix);
+          } else {
+            imageNumber++;
+            String newImageNumberString = imageNumber.toString();
+            newImagePathWithSuffix =
+                "${newImagePath.replaceRange(newImagePath.length - imageNumberStringWithType.length, null, newImageNumberString)}.$imageFileType";
+            await tempFile.copy(newImagePathWithSuffix);
           }
         }
-        else {
-          await tempFile.copy(newImagePath);
-        }
-
+      } else {
+        await tempFile.copy(newImagePathWithSuffix);
+      }
     }
 
     final meme = Meme(
       id: id,
       texts: textWithPositions,
-      memePath: newImagePath,
+      memePath: newImagePathWithSuffix,
     );
     return MemesRepository.getInstance().addToMemes(meme);
   }
