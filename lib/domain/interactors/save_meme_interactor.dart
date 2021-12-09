@@ -43,8 +43,9 @@ class SaveMemeInteractor {
     String newImagePathWithSuffix = newImagePath;
     final List<Meme> memesList = await MemesRepository.getInstance().getMemes();
     for (var meme in memesList) {
+      final int lengthStorage = await File(meme.memePath!).length();
       if (meme.memePath == newImagePath && meme.memePath != null) {
-        if (await tempFile.length() == await File(meme.memePath!).length()) {
+        if (length == lengthStorage) {
           print("Файлы одинаковы, не сохраняем");
         } else {
           print("Файлы разные, но имеют одинаковые имена, сохраняем");
