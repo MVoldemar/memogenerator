@@ -1,7 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:memogenerator/data/models/meme.dart';
 import 'package:memogenerator/data/models/text_with_position.dart';
 import 'package:memogenerator/data/repositories/memes_repository.dart';
@@ -41,7 +40,9 @@ class SaveMemeInteractor {
       final memesDirectory = Directory(memePath);
       memesDirectory.create(recursive: true);
       final currentFiles = memesDirectory.listSync();
+
       final imageName = _getFileNameByPath(imagePath);
+
       final oldFileWithTheSameName = currentFiles.firstWhereOrNull(
             (element) {
           return _getFileNameByPath(element.path) == imageName && element is File;
@@ -100,7 +101,7 @@ class SaveMemeInteractor {
         final imageNameWithoutSuffix =
         imageNameWithoutExtension.substring(0, indexOfLastUnderScore);
         final correctedNewImagePath =
-            "$memePath${Platform.pathSeparator}${imageNameWithoutSuffix}_${suffixNumberString}";
+            "$memePath${Platform.pathSeparator}${imageNameWithoutSuffix}_${suffixNumber + 1}$extension";
         await tempFile.copy(correctedNewImagePath);
         return correctedNewImagePath;
       }
