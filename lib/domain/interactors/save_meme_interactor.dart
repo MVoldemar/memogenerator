@@ -35,10 +35,9 @@ class SaveMemeInteractor {
 
     Future<String> createNewFile(final String imagePath) async {
       final docsPath = await getApplicationDocumentsDirectory();
-      final memePath = "${docsPath.absolute.path}${Platform
-          .pathSeparator}memes";
+      final memePath = "${docsPath.absolute.path}${Platform.pathSeparator}memes";
       final memesDirectory = Directory(memePath);
-      memesDirectory.create(recursive: true);
+      await memesDirectory.create(recursive: true);
       final currentFiles = memesDirectory.listSync();
 
       final imageName = _getFileNameByPath(imagePath);
