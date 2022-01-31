@@ -4,17 +4,16 @@ import 'package:equatable/equatable.dart';
 
 import 'meme_text.dart';
 
-class MemeTextWithOffset extends Equatable{
-  final String id;
-  final String text;
+class MemeTextWithOffset extends Equatable {
+  final MemeText memeText;
   final Offset? offset;
 
-  MemeTextWithOffset({required this.id, required this.text, required this.offset});
+  MemeTextWithOffset({
+    required this.memeText,
+    required this.offset,
+  });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [id, text, offset];
-
-
-
+  List<Object?> get props => [memeText, offset];
 }
