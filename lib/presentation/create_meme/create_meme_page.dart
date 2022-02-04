@@ -40,6 +40,10 @@ class _CreateMemePageState extends State<CreateMemePage> {
       value: bloc,
       child: WillPopScope(
         onWillPop: () async {
+          final allSaved = await bloc.isAllSaved();
+          if(allSaved){
+            return true;
+          }
           final goBack = await showConfirmationExitDialod(context);
           return goBack ?? false;
         },

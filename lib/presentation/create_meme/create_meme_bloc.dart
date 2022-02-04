@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:memogenerator/data/models/meme.dart';
 import 'package:memogenerator/data/models/position.dart';
 import 'package:memogenerator/data/models/text_with_position.dart';
@@ -44,6 +45,29 @@ class CreateMemeBloc {
     memePathSubject.add(selectedMemePath);
     _subscribeToNewMemTextOffset();
     _subscribeToExistentMeme();
+    print("Выполнили конструктор");
+  }
+
+  Future<bool> isAllSaved() async {
+    final savedMeme = await MemesRepository.getInstance().getMeme(id);
+    if (savedMeme == null) {
+      return false;
+    }
+
+    final savedMemeTexts = savedMeme.texts.map((textWithPosition) {
+      return MemeText.createFromTextWithPosition(textWithPosition);
+    }).toList();
+    final savedMemeTextOffsets = savedMeme.texts.map((textWithPosition) {
+      return MemeTextOffset(
+        id: textWithPosition.id,
+        offset: Offset(
+          textWithPosition.position.left,
+          textWithPosition.position.top,
+        ),
+      );
+    }).toList();
+    return DeepCollectionEquality.unordered().equals(savedMemeTexts, memeTextSubject.value) &&
+        DeepCollectionEquality.unordered().equals(savedMemeTextOffsets, memeTextOffsetsSubject.value);
   }
 
   void _subscribeToExistentMeme() {
@@ -96,7 +120,7 @@ class CreateMemeBloc {
 
   void deleteMeme(final String id) {
     final foundMemeText =
-    memeTextSubject.value.firstWhereOrNull((MemeText) => MemeText.id == id);
+        memeTextSubject.value.firstWhereOrNull((MemeText) => MemeText.id == id);
     final copiedList = [...memeTextSubject.value];
     copiedList.remove(foundMemeText);
     memeTextSubject.add(copiedList);
@@ -109,14 +133,14 @@ class CreateMemeBloc {
     final FontWeight fontWeight,
   ) {
     final copiedList = [...memeTextSubject.value];
-    final oldMemeText = copiedList.firstWhereOrNull((memeText) => memeText.id == textId);
+    final oldMemeText =
+        copiedList.firstWhereOrNull((memeText) => memeText.id == textId);
     if (oldMemeText == null) {
       return;
     }
     copiedList.remove(oldMemeText);
     copiedList.add(
-      oldMemeText.copyWithChangeFontSettings(color, fontSize, fontWeight)
-    );
+        oldMemeText.copyWithChangeFontSettings(color, fontSize, fontWeight));
     memeTextSubject.add(copiedList);
   }
 
@@ -151,11 +175,10 @@ class CreateMemeBloc {
         )
         .asStream()
         .listen(
-      (saved) {
-      },
-      onError: (error, stackTrace) =>
-          print("Error in saveMemeSubscription: $error, $stackTrace"),
-    );
+          (saved) {},
+          onError: (error, stackTrace) =>
+              print("Error in saveMemeSubscription: $error, $stackTrace"),
+        );
     // MemesRepository.getInstance().addToMemes(meme);
   }
 
